@@ -1,7 +1,7 @@
 interface:
   display_name: "Caliph 群聊编辑部"
-  short_description: "把本地群聊做成日报、周报或A3群报"
+  short_description: "把本地群聊做成现代日报、周报、PNG或A3群报"
   icon_small: "./assets/editorial-mark.svg"
   icon_large: "./assets/editorial-mark.svg"
   brand_color: "#A83228"
-  default_prompt: "使用 $caliph-wechat-editorial，把现有微信群聊素材整理成一份有编辑感的日报。"
+  default_prompt: "使用 $caliph-wechat-editorial，把现有微信群聊素材整理成现代编辑风格的普通版日报；默认带群头像和人物头像，输出 PNG + PDF。"

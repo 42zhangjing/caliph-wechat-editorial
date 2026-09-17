@@ -1,0 +1,49 @@
+name: Editorial v2 CI
+
+on:
+  push:
+    branches:
+      - feat/editorial-v2
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Compile Python
+        run: |
+          python -m py_compile \
+            scripts/prepare_source.py \
+            scripts/extract_avatars.py \
+            scripts/validate_report.py \
+            scripts/render_editorial.py
+
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -p 'test_*.py' -v
+
+      - name: Validate fixture report
+        run: |
+          python scripts/validate_report.py \
+            tests/fixtures/report.json \
+            --source tests/fixtures/source-normalized.json
+
+      - name: HTML render smoke test
+        run: |
+          python scripts/render_editorial.py \
+            tests/fixtures/report.json \
+            --source tests/fixtures/source-normalized.json \
+            --formats html \
+            --output-dir /tmp/caliph-editorial-smoke \
+            --skip-preflight
+          test -f '/tmp/caliph-editorial-smoke/测试群/测试群_日报_2026-09-17_普通版.html'
+          grep -q 'CALIPH WECHAT EDITORIAL' '/tmp/caliph-editorial-smoke/测试群/测试群_日报_2026-09-17_普通版.html'
+          grep -q 'https://caliph.chengyu.dev/brand/caliph.svg' '/tmp/caliph-editorial-smoke/测试群/测试群_日报_2026-09-17_普通版.html'
+          ! grep -q 'file:///Users/' '/tmp/caliph-editorial-smoke/测试群/测试群_日报_2026-09-17_普通版.html'
