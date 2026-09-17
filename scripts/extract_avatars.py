@@ -7,6 +7,7 @@ import argparse
 import json
 import os
 import sqlite3
+from collections import defaultdict
 from pathlib import Path
 
 
@@ -24,17 +25,20 @@ def main() -> int:
     args = parser.parse_args()
 
     raw = json.loads(args.source.read_text(encoding="utf-8"))
-    wanted = [name.strip() for name in args.names.split(",") if name.strip()]
-    username_by_name: dict[str, str] = {}
+    wanted = list(dict.fromkeys(name.strip() for name in args.names.split(",") if name.strip()))
+
+    usernames_by_name: dict[str, set[str]] = defaultdict(set)
     for message in raw.get("messages", []):
         name = str(message.get("sender", ""))
         username = str(message.get("sender_username", ""))
         if name in wanted and username:
-            username_by_name[name] = username
+            usernames_by_name[name].add(username)
 
     args.output.mkdir(parents=True, exist_ok=True)
     os.chmod(args.output, 0o700)
     manifest: dict[str, str] = {}
+    ambiguous: list[str] = []
+    missing: list[str] = []
 
     connection = sqlite3.connect(f"file:{args.db}?mode=ro", uri=True)
     group_avatar = False
@@ -51,17 +55,25 @@ def main() -> int:
                 os.chmod(group_path, 0o600)
                 group_avatar = True
 
-        for index, name in enumerate(wanted, start=1):
-            username = username_by_name.get(name)
-            if not username:
+        exported_index = 0
+        for name in wanted:
+            usernames = usernames_by_name.get(name, set())
+            if len(usernames) > 1:
+                ambiguous.append(name)
                 continue
+            if not usernames:
+                missing.append(name)
+                continue
+            username = next(iter(usernames))
             row = connection.execute(
                 "select image_buffer from head_image where username = ?",
                 (username,),
             ).fetchone()
             if not row or not row[0]:
+                missing.append(name)
                 continue
-            path = args.output / f"avatar-{index:03d}.jpg"
+            exported_index += 1
+            path = args.output / f"avatar-{exported_index:03d}.jpg"
             path.write_bytes(bytes(row[0]))
             os.chmod(path, 0o600)
             manifest[name] = str(path.resolve())
@@ -71,10 +83,15 @@ def main() -> int:
     manifest_path = args.output / "avatars.json"
     manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     os.chmod(manifest_path, 0o600)
+
     print(
         f"[OK] exported group_avatar={'yes' if group_avatar else 'no'}, "
         f"members={len(manifest)}/{len(wanted)} -> {args.output}"
     )
+    if ambiguous:
+        print("[WARN] ambiguous display names skipped (use initial placeholders): " + ", ".join(ambiguous))
+    if missing:
+        print("[WARN] avatar unavailable (use initial placeholders): " + ", ".join(missing))
     return 0
 
 
