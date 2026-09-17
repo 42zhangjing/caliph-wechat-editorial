@@ -1,0 +1,25 @@
+{
+  "schema_version": "caliph-editorial-source-2",
+  "group_name": "测试群",
+  "period": {
+    "start": "2026-09-17",
+    "end": "2026-09-17"
+  },
+  "stats": {
+    "message_count": 3,
+    "sender_count": 2,
+    "sender_counts": [
+      {"name": "甲", "count": 2},
+      {"name": "乙", "count": 1}
+    ],
+    "type_counts": {"文本": 3},
+    "day_counts": {"2026-09-17": 3},
+    "hour_counts": {"09": 2, "15": 1}
+  },
+  "messages": [
+    {"anchor": "M000001", "time": "2026-09-17 09:31:00", "sender": "甲", "type": "文本", "content": "这是一句原话"},
+    {"anchor": "M000002", "time": "2026-09-17 09:34:00", "sender": "乙", "type": "文本", "content": "我补一个实际例子"},
+    {"anchor": "M000003", "time": "2026-09-17 15:02:00", "sender": "甲", "type": "文本", "content": "下午继续看结果"}
+  ],
+  "notes": []
+}
