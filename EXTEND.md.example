@@ -1,0 +1,10 @@
+# Caliph WeChat Editorial preferences
+# Copy to one of the locations documented in SKILL.md and edit as needed.
+
+default_style: normal
+default_formats: png,pdf
+output_root: /Users/chengyu/Downloads/微信群报
+include_group_avatar: true
+include_people_avatars: true
+language: zh-CN
+page_mode: auto
