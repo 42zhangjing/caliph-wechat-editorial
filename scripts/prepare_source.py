@@ -3,7 +3,8 @@
 
 The input is a local yichen source package. The output deliberately drops
 internal database/table identifiers and sender usernames before the content
-is handed to the editorial stage.
+is handed to the editorial stage. A synthetic anchor is added so later audit
+passes can refer back to a message without exposing WeChat internal IDs.
 """
 
 from __future__ import annotations
@@ -11,7 +12,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
-from collections import Counter, defaultdict
+from collections import Counter
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -58,8 +59,9 @@ def main() -> int:
         if end and current >= end:
             continue
         # Keep only editorially useful fields. In particular, do not carry
-        # sender_username, database names, table names, or internal ids.
+        # sender_username, database names, table names, wxid, or raw IDs.
         selected.append({
+            "anchor": f"M{len(selected) + 1:06d}",
             "time": str(raw.get("time", "")),
             "sender": str(raw.get("sender", "未知")),
             "type": str(raw.get("type", "未知")),
@@ -73,7 +75,7 @@ def main() -> int:
 
     period = source.get("range", {})
     result = {
-        "schema_version": "caliph-editorial-source-1",
+        "schema_version": "caliph-editorial-source-2",
         "group_name": source.get("group", {}).get("name", ""),
         "period": {
             "start": args.start or period.get("start", ""),
@@ -93,6 +95,7 @@ def main() -> int:
         "messages": selected,
         "notes": [
             "本素材由已解密的 yichen vault 生成。",
+            "anchor 为本次规范化过程生成的安全定位符，不是微信内部 ID。",
             "图片、视频和文件若只有占位符，不得在成稿中补写不可见内容。",
         ],
     }
