@@ -12,6 +12,9 @@
   "period": {"start": "2026-09-17", "end": "2026-09-17"},
   "edition": "第 001 期 · 日报",
   "layout": {"page_mode": "auto"},
+  "brand": {
+    "logo": "https://caliph.chengyu.dev/brand/caliph.svg"
+  },
   "masthead": {
     "kicker": "DAILY GROUP EDITORIAL",
     "title": "群名编辑部",
@@ -64,6 +67,21 @@
 - `period`：必须与素材范围一致。
 - `edition`：可读期号，不参与文件名唯一性。
 - `layout.page_mode`：默认 `auto`；只有人工指定页结构时使用 `manual`。
+- `brand.logo`：可选品牌 Logo。省略时 renderer 默认使用 `https://caliph.chengyu.dev/brand/caliph.svg`，显示在每版页脚；它与群头像是两个独立层级。可改成本地 SVG/PNG 路径或其它公开品牌 URL。
+
+## Brand
+
+CALIPH Logo 代表出版品牌，群头像代表本期群聊来源。默认版式不会用 CALIPH Logo 替代群头像。
+
+默认品牌地址：
+
+```text
+https://caliph.chengyu.dev/brand/caliph.svg
+```
+
+如果 `brand.logo` 指向本地文件，renderer 会复制到报告 assets 并改成相对路径。如果使用公开 `https://` URL，则保留公开品牌 URL；任何私人头像、群聊配图和本地素材仍必须本地化，不能暴露 `/Users/...` 路径。
+
+品牌 Logo 默认小尺寸出现在页脚，承担签名作用，不与报头争夺视觉层级。
 
 ## Lead
 
@@ -186,4 +204,4 @@ renderer 默认输出 `png,pdf`，根目录：
 吃瓜备用_周报_2026-09-11--2026-09-17_毒舌版_p02.png
 ```
 
-传 `--formats html,png,pdf` 时同时保留 HTML。HTML 资源全部使用相对 assets 路径。
+传 `--formats html,png,pdf` 时同时保留 HTML。私人/本地素材使用相对 assets 路径；CALIPH 公共品牌 Logo 可保留公开 HTTPS 地址。
