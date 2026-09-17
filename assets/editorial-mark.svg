@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Caliph 群聊编辑部</title>
+  <desc id="desc">A warm paper editorial mark with a group chat bubble and three member dots.</desc>
+  <rect width="512" height="512" rx="96" fill="#f7f3eb"/>
+  <rect x="28" y="28" width="456" height="456" rx="76" fill="#171717"/>
+  <path d="M82 102h348v232H252l-72 78v-78H82z" fill="#243a53"/>
+  <path d="M82 102h348v34H82z" fill="#a83228"/>
+  <circle cx="181" cy="224" r="37" fill="#f7f3eb"/>
+  <circle cx="256" cy="224" r="37" fill="#a83228"/>
+  <circle cx="331" cy="224" r="37" fill="#f7f3eb"/>
+  <path d="M112 386h288" stroke="#f7f3eb" stroke-width="9" stroke-linecap="round"/>
+  <path d="M112 418h196" stroke="#a83228" stroke-width="9" stroke-linecap="round"/>
+</svg>
