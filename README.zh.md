@@ -66,10 +66,11 @@ source
 - `prepare_source.py` 删除内部字段，并生成安全消息 anchor。
 - `validate_report.py` 检查 report 结构、逐字引用、页面索引和文案 style lint。
 - 编辑文字默认不使用 `不是……而是……` / `并非……而是……` 模板句；逐字引用保持原文。
-- renderer 默认自动分页；第一版完整 Lead，后续版 compact header；故事编号跨页连续。
+- 毒舌版保留已审计事实骨架；对本期公开言行可写引用点评与「不留情面版」人物短评，不碰人身攻击。
+- renderer 按真实双栏卡片自动分页；末行孤卡跨双栏，页脚固定在页面底部，避免保守分页造成半页空白。
 - 无 Lead 图片时自动使用 text-only 版式。
 - HTML 图片复制到私有 assets 目录，只保留相对路径。
-- Chrome preflight 检查每个 A3 页面真实高度，发现 overflow 时停止出版。
+- Chrome preflight 用 DOM/layout ready 而非 `window.load` 检查每个 A3 页面真实高度；测量副本不依赖远程图片，超时会明确终止，发现 overflow 时停止出版。
 
 ## 输出命名
 
@@ -113,5 +114,5 @@ page_mode: auto
 - `scripts/render_editorial.py`：现代版式、自动分页、HTML/PNG/PDF 与 preflight
 - `references/report-schema.md`：report JSON 字段
 - `references/editorial-workflow.md`：三轮编辑与视觉规范
-- `tests/`：核心 validator 测试
+- `tests/`：validator 与 renderer 回归测试
 - `agents/openai.yaml` / `assets/`：Codex UI 元数据和图标

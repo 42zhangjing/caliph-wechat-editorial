@@ -31,6 +31,9 @@ AI_TICS = [
     "值得注意的是",
     "这背后反映了",
 ]
+ROAST_REDFLAGS = [
+    ("medical or psychological diagnosis", re.compile(r"ADHD|精神病|人格障碍|心理医生|需要看医生", re.I)),
+]
 
 
 def parser() -> argparse.ArgumentParser:
@@ -55,8 +58,11 @@ def strings_for_style(report: dict[str, Any]) -> Iterable[tuple[str, str]]:
         for key in ("eyebrow", "title", "body"):
             if section.get(key):
                 yield f"sections[{i}].{key}", str(section[key])
+        for j, quote in enumerate(section.get("quotes", [])):
+            if isinstance(quote, dict) and quote.get("comment"):
+                yield f"sections[{i}].quotes[{j}].comment", str(quote["comment"])
     for i, person in enumerate(report.get("people", [])):
-        for key in ("role", "note"):
+        for key in ("role", "note", "roast_note"):
             if person.get(key):
                 yield f"people[{i}].{key}", str(person[key])
     for key in ("title", "body"):
@@ -150,18 +156,30 @@ def validate(report: dict[str, Any], source: dict[str, Any] | None = None) -> tu
         quotes = section.get("quotes", [])
         if not isinstance(quotes, list):
             errors.append(f"{path}.quotes: expected array")
-        elif source is not None:
+        else:
             for j, quote in enumerate(quotes):
                 if not isinstance(quote, dict):
                     errors.append(f"{path}.quotes[{j}]: expected object")
                 else:
-                    verify_quote(quote, messages, f"{path}.quotes[{j}]", errors)
+                    if source is not None:
+                        verify_quote(quote, messages, f"{path}.quotes[{j}]", errors)
+                    if "comment" in quote:
+                        if not isinstance(quote["comment"], str):
+                            errors.append(f"{path}.quotes[{j}].comment: expected string")
+                        elif len(quote["comment"]) > 90:
+                            warnings.append(f"{path}.quotes[{j}].comment: unusually long (>90 chars)")
 
     people = report.get("people", [])
     if not isinstance(people, list):
         errors.append("people: expected array")
     elif len(people) > 8:
         warnings.append(f"people: {len(people)} cards; consider <=8 for editorial focus")
+    else:
+        for i, person in enumerate(people):
+            if not isinstance(person, dict):
+                errors.append(f"people[{i}]: expected object")
+            elif "roast_note" in person and not isinstance(person["roast_note"], str):
+                errors.append(f"people[{i}].roast_note: expected string")
 
     stats = report.get("stats", [])
     if not isinstance(stats, list):
@@ -184,13 +202,19 @@ def validate(report: dict[str, Any], source: dict[str, Any] | None = None) -> tu
                 else:
                     seen.add(index)
 
-    for path, text in strings_for_style(report):
+    style_strings = list(strings_for_style(report))
+    for path, text in style_strings:
         for label, pattern in STYLE_PATTERNS:
             if pattern.search(text):
                 errors.append(f"{path}: avoid template contrast pattern {label}")
         for tic in AI_TICS:
             if tic in text:
                 warnings.append(f"{path}: generic editorial tic detected: {tic}")
+    if style == "roast":
+        for path, text in style_strings:
+            for label, pattern in ROAST_REDFLAGS:
+                if pattern.search(text):
+                    errors.append(f"{path}: roast copy must not include {label}")
 
     if source is not None:
         src_period = source.get("period", {})

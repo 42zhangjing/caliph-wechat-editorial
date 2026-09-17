@@ -61,6 +61,22 @@ class ValidateReportTests(unittest.TestCase):
         errors, _ = validate(report, source)
         self.assertEqual(errors, [])
 
+    def test_roast_comment_is_checked_for_diagnosis_jokes(self):
+        report = self.base_report()
+        report["style"] = "roast"
+        report["sections"][0]["quotes"][0]["comment"] = "这位需要看医生。"
+        errors, _ = validate(report, self.source())
+        self.assertTrue(any("medical or psychological diagnosis" in item for item in errors))
+
+    def test_roast_redline_does_not_rewrite_or_police_a_direct_quote(self):
+        report = self.base_report()
+        report["style"] = "roast"
+        report["sections"][0]["quotes"][0]["text"] = "我在公开讨论里提到 ADHD。"
+        source = self.source()
+        source["messages"][0]["content"] = "我在公开讨论里提到 ADHD。"
+        errors, _ = validate(report, source)
+        self.assertEqual(errors, [])
+
 
 if __name__ == "__main__":
     unittest.main()

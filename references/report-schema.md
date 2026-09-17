@@ -38,14 +38,14 @@
       "priority": "major",
       "evidence": "group_observation",
       "quotes": [
-        {"text": "素材中的短原话", "speaker": "群友", "time": "09:24"}
+        {"text": "素材中的短原话", "speaker": "群友", "time": "09:24", "comment": "毒舌版可选的短编辑点评"}
       ],
       "image": "/optional/local/story-image.jpg",
       "image_alt": "可选图说"
     }
   ],
   "people": [
-    {"name": "群友", "role": "提问 / 查证", "count": 12, "note": "本期贡献"}
+    {"name": "群友", "role": "提问 / 查证", "count": 12, "note": "本期贡献", "roast_note": "毒舌版专用短评"}
   ],
   "stats": [
     {"value": "550", "label": "条消息"},
@@ -101,7 +101,7 @@ https://caliph.chengyu.dev/brand/caliph.svg
 - `title`：具体标题。
 - `body`：故事正文。
 - `tone`：`ink` / `red` / `blue` / `accent`。
-- `priority`：`major` / `minor`，供自动分页估算使用。
+- `priority`：`major` / `minor`，供自动分页兜底估算使用；默认自动模式最终以真实 Chrome 测量为准。
 - `evidence`：主要证据等级，见下节。
 - `quotes`：只放能在 `source-normalized.json` 中逐字定位的短引用。
 - `image` / `image_alt`：可选本地图片。renderer 会复制到 HTML 自己的 assets 目录并改写成相对路径。
@@ -125,12 +125,14 @@ https://caliph.chengyu.dev/brand/caliph.svg
 引用对象：
 
 ```json
-{"text": "逐字原话", "speaker": "显示名", "time": "09:24"}
+{"text": "逐字原话", "speaker": "显示名", "time": "09:24", "comment": "可选编辑点评"}
 ```
 
 `validate_report.py --source source-normalized.json` 会用 `speaker + text` 做逐字回查，并优先用 `time` 缩小候选范围。找不到引用时验证失败。
 
 不要为了让句子更顺而改写 `text`。需要润色时改成间接引语并从 `quotes` 移出。
+
+`comment` 只用于 roast 版的短编辑点评：它不是原话，不能写入 `text`，也不得凭空推断私人动机、身份或健康状况。普通版忽略该字段。
 
 ## People
 
@@ -139,6 +141,7 @@ https://caliph.chengyu.dev/brand/caliph.svg
 - 推荐 4—8 人。
 - `role` 写本期承担的动作或位置，如“资料投放 / 现实验算”。
 - `note` 控制 1—2 行。
+- `roast_note` 可选；仅 roast 模式优先显示，用来写本期可见反差或公开行为的短评，不能变成长期人格标签。
 - `count` 可省略；即使保留，也只作为弱化的数据标签。
 - 真实头像不写进 `report.json` 也可以，由 `--avatars` manifest 注入。
 
@@ -150,7 +153,7 @@ https://caliph.chengyu.dev/brand/caliph.svg
 
 ## Closing
 
-写一个真实未决问题、下一步追踪项或克制收束。避免万能结论和模板式价值拔高。
+写一个真实未决问题、下一步追踪项或克制收束。避免万能结论和模板式价值拔高。roast 版可保留同一事实收束，并默认使用 renderer 的 AI 免责声明页脚。
 
 编辑生成的 `lead`、`sections`、`people`、`closing` 默认不得使用 `不是……而是……` 和 `并非……而是……` 模板句；逐字引用除外。validator 会检查编辑字段。
 

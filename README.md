@@ -47,10 +47,11 @@ Key guarantees:
 - normalized messages receive safe synthetic anchors instead of exposing internal WeChat IDs;
 - `validate_report.py` checks structure, exact quotes, page indexes, and editorial style rules;
 - generated editorial copy avoids the templated Chinese contrast patterns `不是……而是……` and `并非……而是……` by default; verbatim chat quotes remain untouched;
-- the renderer keeps the full Lead on page one, uses compact continuation headers later, and preserves global story numbering;
+- roast mode keeps the audited skeleton while adding per-quote editorial comments and “no-mercy” roster notes only for public, period-specific behavior;
+- the renderer packs the real two-column story grid, lets a final orphan card span both columns, and keeps the page footer at the bottom rather than creating accidental half-empty pages;
 - a missing Lead image triggers a text-only layout rather than an empty image column;
 - local images are copied into report-specific asset folders and HTML uses relative URLs;
-- Chrome-based A3 preflight detects real page overflow before publication.
+- Chrome-based A3 preflight uses DOM/layout readiness rather than `window.load`, substitutes remote images only in its measuring copy, detects real overflow, and terminates on a bounded timeout.
 
 ## Output naming
 
@@ -83,5 +84,5 @@ See `EXTEND.md.example` for the user-level defaults supported by the Skill.
 - `scripts/extract_avatars.py` — local avatar export with ambiguity protection
 - `scripts/render_editorial.py` — modern layout, automatic pagination, HTML/PNG/PDF export and preflight
 - `references/` — report schema and editorial workflow
-- `tests/` — validator tests
+- `tests/` — validator and renderer regression tests
 - `agents/openai.yaml` / `assets/` — Codex UI metadata and icon
