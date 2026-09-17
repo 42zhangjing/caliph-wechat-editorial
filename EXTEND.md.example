@@ -6,5 +6,6 @@ default_formats: png,pdf
 output_root: /Users/chengyu/Downloads/微信群报
 include_group_avatar: true
 include_people_avatars: true
+brand_logo: https://caliph.chengyu.dev/brand/caliph.svg
 language: zh-CN
 page_mode: auto
