@@ -1,0 +1,61 @@
+{
+  "kind": "daily",
+  "style": "normal",
+  "group_name": "测试群",
+  "period": {"start": "2026-09-17", "end": "2026-09-17"},
+  "edition": "第 001 期 · 日报",
+  "layout": {"page_mode": "auto"},
+  "masthead": {
+    "kicker": "DAILY GROUP EDITORIAL",
+    "title": "测试群编辑部",
+    "subtitle": "2026 年 9 月 17 日现场记录"
+  },
+  "lead": {
+    "kicker": "今日主线 · 09.17",
+    "title": "一次小范围讨论，最后落到可验证的问题",
+    "dek": "三条消息也足以验证引用、排版和导出链路。",
+    "body": "上午有人提出问题，随后补进一个实际例子；下午继续追踪结果。这个 fixture 只用于测试渲染流程。",
+    "tags": ["测试", "审稿"]
+  },
+  "sections": [
+    {
+      "eyebrow": "09:31 · TEST",
+      "title": "先把问题说清楚",
+      "body": "甲先给出一句明确表述，乙随后补充实际例子，形成一个可以回查的最小讨论链。",
+      "tone": "ink",
+      "priority": "major",
+      "evidence": "direct_quote",
+      "quotes": [{"text": "这是一句原话", "speaker": "甲", "time": "09:31"}]
+    },
+    {
+      "eyebrow": "09:34 · TEST",
+      "title": "补一个实际例子",
+      "body": "乙把抽象问题落到具体情境，测试第二个 story card 的排版与全局编号。",
+      "tone": "blue",
+      "priority": "minor",
+      "evidence": "group_observation",
+      "quotes": []
+    },
+    {
+      "eyebrow": "15:02 · TEST",
+      "title": "下午继续追踪结果",
+      "body": "讨论没有被硬写成结论，最后保留一个可继续观察的节点。",
+      "tone": "red",
+      "priority": "minor",
+      "evidence": "group_observation",
+      "quotes": []
+    }
+  ],
+  "people": [
+    {"name": "甲", "role": "提出问题 / 继续追踪", "count": 2, "note": "提供可回查原话并继续跟进。"},
+    {"name": "乙", "role": "实际例子", "count": 1, "note": "补充具体情境。"}
+  ],
+  "stats": [
+    {"value": "3", "label": "条消息"},
+    {"value": "2", "label": "位发言者"}
+  ],
+  "closing": {
+    "title": "留下的问题",
+    "body": "继续验证新版 renderer 在更高密度内容下的分页稳定性。"
+  }
+}
