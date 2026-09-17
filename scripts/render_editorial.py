@@ -19,6 +19,7 @@ from urllib.parse import unquote, urlparse
 from validate_report import validate
 
 DEFAULT_OUTPUT_ROOT = Path("/Users/chengyu/Downloads/微信群报")
+DEFAULT_BRAND_LOGO = "https://caliph.chengyu.dev/brand/caliph.svg"
 PAGE_WIDTH = 1123
 PAGE_HEIGHT = 1587
 
@@ -53,6 +54,11 @@ class AssetManager:
         directory.mkdir(parents=True, exist_ok=True)
 
     def import_asset(self, value: str | None, label: str) -> str:
+        if not value:
+            return ""
+        if value.startswith("https://") or value.startswith("http://"):
+            # Public brand assets may remain remote. Private/local images are always localized.
+            return value
         path = resolve_local_path(value, self.base_dir)
         if path is None or not path.is_file():
             return ""
@@ -233,6 +239,8 @@ def build_page_fragments(
     sections = report.get("sections", [])
     pages = resolve_pages(report)
     group_avatar = assets.import_asset(group_avatar_raw or report.get("group_avatar"), "group-avatar")
+    brand = report.get("brand", {}) if isinstance(report.get("brand", {}), dict) else {}
+    brand_logo = assets.import_asset(str(brand.get("logo", DEFAULT_BRAND_LOGO)), "caliph-brand")
     fragments: list[str] = []
     for page_number, page in enumerate(pages):
         first_page = page_number == 0
@@ -248,11 +256,12 @@ def build_page_fragments(
                 extras += f'<section class="closing"><div class="section-heading"><span>{esc(closing.get("title", "留下的问题"))}</span><span>EDITOR\'S NOTE</span></div><p>{esc(closing.get("body"))}</p></section>'
         top = masthead_html(report, page.get("label", ""), group_avatar, first_page)
         feature = lead_html(report, assets) if first_page else continuation_strip(report, page)
+        footer_brand = image_tag(brand_logo, "CALIPH", "brand-logo")
         fragments.append(f'''
     <section class="page">
       {top}<div class="rule"></div>
       <main>{feature}<section class="stories">{body}</section>{extras}</main>
-      <footer><span>CALIPH WECHAT EDITORIAL</span><span>{esc(report.get("footer", "本地素材编辑 · 群聊原话与编辑判断分离"))}</span></footer>
+      <footer><span class="footer-brand">{footer_brand}<span>CALIPH WECHAT EDITORIAL</span></span><span>{esc(report.get("footer", "本地素材编辑 · 群聊原话与编辑判断分离"))}</span></footer>
     </section>''')
     return fragments
 
@@ -328,7 +337,9 @@ body.roast { --paper:#f3f0e8; --ink:#101010; --muted:#65615b; --accent:#e33b20; 
 body.roast .story h3,body.roast .lead h2 { letter-spacing:-1.8px; }
 body.roast .quote { background:var(--signal); padding:8px 10px; margin-left:-11px; }
 body.roast .quote cite { color:#423d24; }
-footer { display:flex; justify-content:space-between; margin-top:18px; padding-top:8px; border-top:1px solid var(--ink); color:var(--muted); font-family:"SFMono-Regular","Menlo",sans-serif; font-size:8.5px; letter-spacing:.7px; }
+footer { display:flex; justify-content:space-between; align-items:center; gap:18px; margin-top:18px; padding-top:8px; border-top:1px solid var(--ink); color:var(--muted); font-family:"SFMono-Regular","Menlo",sans-serif; font-size:8.5px; letter-spacing:.7px; }
+.footer-brand { display:flex; align-items:center; gap:8px; min-width:0; }
+.brand-logo { width:auto; height:16px; max-width:90px; object-fit:contain; display:block; }
 @media screen and (max-width:900px) {
   .page { width:100%; height:auto; min-height:100vh; margin:0; padding:28px 22px; overflow:visible; }
   .lead--with-image,.lead--text-only .lead-copy { grid-template-columns:1fr; display:grid; }
